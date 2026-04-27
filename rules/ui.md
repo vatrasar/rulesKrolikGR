@@ -33,7 +33,7 @@ You have installed Material.Icons.Avalonia and Avalonia.Fluent.Icons so you can 
 ### Styles separation from views
 
 - NEVER use inline `<UserControl.Styles>` or `<Window.Styles>` or `<ANYBuidlInControl.Styles>` directly inside View files (like UserControl or Window).
-- ALL styles MUST be extracted to dedicated `.axaml` files in the appropriate `Styles` directory (FeatureStyles, GlobalStyles or ScreenStyles).
+- ALL styles (and animations) MUST be extracted to dedicated `.axaml` files in the appropriate `Styles` directory (FeatureStyles, GlobalStyles or ScreenStyles).
 - In the View file, you are ONLY allowed to import styles using `<StyleInclude Source="..." />`.
 - DO NOT ignore this rule even for small, one-off styles.
 
