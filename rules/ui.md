@@ -108,3 +108,10 @@ If any property (e.g., `Width`, `Height`, `Opacity`, `Background`, `Margin`) nee
 <Button Content="Zapisz" />
 <ItemsControl  />
 ```
+
+
+
+## Avalonia XAML Constraints
+
+- **Border Property Isolation**: Never apply `BorderBrush`, `BorderThickness`, or `CornerRadius` directly to layout panels (e.g., `Grid`, `StackPanel`, `DockPanel`, `WrapPanel`, `UniformGrid`) or `ItemsControl`. These properties are not defined for these types in Avalonia.
+- **Required Pattern**: To add a border, background, or rounded corners to these elements, they must be wrapped in a `Border` control with the properties defined on the wrapper.
