@@ -19,3 +19,7 @@ Before implementing:
 ## MCP
 
 You have access to context7 mcp, which you can use it when you need to check up to date documentation of AvaloniaUI or reactiveUI
+
+
+
+## 
