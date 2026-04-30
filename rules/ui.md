@@ -11,6 +11,19 @@ The application use the **FluentTheme** design system with custom palettes defin
 - **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or named colors (e.g., `Red`, `Blue`) directly in XAML or code. Use theme resources instead.
 - **Dynamic Resources:** Always use `{DynamicResource}` for brushes and colors to ensure compatibility with Light/Dark mode switching.
 - **Custom Colors:** If a unique color is absolutely necessary (e.g., for specific status indicators), it must be added to Shared/GlobalStyles/Colors.axaml
+- additionaly to standard FluentTheme colors i defined (in AppThemeStyles)
+  - ErrorColor
+  - OnErrorColor
+  - SuccessColor
+  - OnSuccessColor
+
+
+
+## Fonts
+
+Use "HeaderFont" for headers, large texts i mean:
+{StaticResource HeaderFont}. 
+Fonts are defined in Fonts.axaml in Resources
 
 ## Icons
 
@@ -108,8 +121,6 @@ If any property (e.g., `Width`, `Height`, `Opacity`, `Background`, `Margin`) nee
 <Button Content="Zapisz" />
 <ItemsControl  />
 ```
-
-
 
 ## Avalonia XAML Constraints
 
