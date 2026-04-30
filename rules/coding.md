@@ -29,24 +29,22 @@ It is meant to use routing from ReactiveUI and a feature-oriented folder archite
 
 3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, numberOfRemainingFreeHours is far superior to h. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
 
-4. Adding comments within a function or method body is STRICTLY FORBIDDEN. Logic should be so clear and names so expressive that internal comments are redundant. You still can use XML Documentation comments (///) on top of fucntion/method, but even then, prioritize making the code self-documenting through better naming and structure.
+4. Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services
 
-5. Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services
-
-6. Language Requirements
+5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English.
 
-7. **Prefer Enums over Constants/Strings:** Whenever a variable can hold a limited set of predefined values (e.g., ShiftType, EmployeeRole, DayOfWeek), **always** use a strongly-typed `enum`. Do not use `string` or `int` constants for these purposes.
+6. **Prefer Enums over Constants/Strings:** Whenever a variable can hold a limited set of predefined values (e.g., ShiftType, EmployeeRole, DayOfWeek), **always** use a strongly-typed `enum`. Do not use `string` or `int` constants for these purposes.
 
-8. There must be two blank lines separating the last property (or backing field) from the constructor or the first method. This creates a clear visual boundary between the class state and its behavior.
+7. There must be two blank lines separating the last property (or backing field) from the constructor or the first method. This creates a clear visual boundary between the class state and its behavior.
 
-9. Avoid Legacy Patterns. Never suggest deprecated patterns or "old-school" boilerplate if a modern, cleaner alternative exists (e.g., use `ReactiveUI.Fody` instead of manual `RaiseAndSetIfChanged`).
+8. Avoid Legacy Patterns. Never suggest deprecated patterns or "old-school" boilerplate if a modern, cleaner alternative exists (e.g., use `ReactiveUI.Fody` instead of manual `RaiseAndSetIfChanged`).
 
-10. Use suffix DTO only for models which are used for network communication
+9. Use suffix DTO only for models which are used for network communication
 
-11. Models shouldn't use suffix "model". Better to name model Malpa than MalpaModel
+10. Models shouldn't use suffix "model". Better to name model Malpa than MalpaModel
 
-12. Surgical Changes
+11. Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
@@ -61,6 +59,34 @@ When your changes create orphans:
 
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
+
+## Documentation & Commenting Standards
+
+**1. NO INLINE COMMENTS**
+
+- Adding comments within a function or method body is STRICTLY FORBIDDEN. 
+- Logic should be so clear and names so expressive that internal comments are redundant. 
+- Code MUST be self-documenting through expressive naming and clear structure.
+- You still can use XML Documentation comments (///) on top of fucntion/method, but even then, prioritize making the code self-documenting through better naming and structure.
+
+**2. ALWAYS KEEP DOCS IN SYNC**
+
+- CRITICAL: Whenever you modify a component, screen, service (logic, UI, navigation, or usages) or usecase, you MUST update its corresponding header/XML documentation.
+
+**3. UI DOCUMENTATION (Screens & Components)**
+
+- Every Screen and Component MUST have a descriptive header comment at the top of its `.axaml.cs` file.
+- **Components** (Default location: `ScreenComponents`, unless explicitly instructed to use `FeatureComponents` or `GlobalComponents`):
+  - Include: Purpose, Usage (Inputs/Outputs/Bindings), Key UI elements, and `Used In` (list of screens/components referencing it).
+- **Screens**:
+  - Include: Purpose, Available Functionalities, Key UI elements, and Navigation (`Navigate From` and `Navigate To` paths).
+
+**4. SERVICES & REPOSITORIES & UseCases**
+
+- All public methods of services and repositories need to have documentation comment
+- Use XML Documentation (`///`) ONLY for `public` methods. Do NOT add XML docs to `private` methods.
+- All UseCases also need to have documentation comment on top of its class
+- Include: The purpose of the method and a list of classes/components that invoke it.
 
 ## Threads and Asynchrony
 
