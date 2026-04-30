@@ -148,3 +148,29 @@ public partial class ExampleViewModel : ViewModelBase
     }
 }
 ```
+
+### ReactiveUI 20.x Binding Lifecycle
+
+
+
+- **NO `.DisposeWith()` on Bind/OneWayBind/BindCommand:** In ReactiveUI 20.x, these methods return `IReactiveBinding<T>` which does NOT implement `IDisposable`. Do NOT chain `.DisposeWith(disposables)`. Bindings are automatically cleaned up when the view deactivates via `WhenActivated`.
+
+- **`.DisposeWith()` ONLY for `IDisposable`:** Use `.DisposeWith(disposables)` only on `IDisposable` results (e.g., `Subscribe()` on `IObservable<T>`). Requires `using System.Reactive.Disposables;`.
+
+### Subscribe in View Code-Behind
+
+- **Use `Observer.Create<T>(action)` instead of bare lambda in `.Subscribe()`:** When subscribing to `IObservable<T>` inside a View's `WhenActivated` block, use `Observer.Create<T>(lambda)` instead of passing a bare lambda. The `Subscribe(Action<T>)` extension method may not resolve correctly in View code-behind files.
+
+```csharp
+this.WhenAnyValue(x => x.ViewModel!.MyProperty)
+    .Subscribe(Observer.Create<bool>(value => MyControl.Classes.Set("my-class", value)))
+    .DisposeWith(disposables);
+```
+
+
+
+### Avalonia Source Generators & InitializeComponent
+
+- **NEVER write a manual `InitializeComponent()` method.** In Avalonia 11.x, source generators automatically create the `InitializeComponent()` method that initializes all `x:Name` fields, wire up event handlers, and load controls. A hand-written `InitializeComponent()` will SHADOW the generated one, causing all `x:Name` fields to remain `null`at runtime. The `.axaml.cs` constructor just calls `InitializeComponent()` — nothing more.
+
+- **NEVER call `AvaloniaXamlLoader.Load(this)` manually.** This is a legacy pattern from older Avalonia versions. It's incompatible with source-generated initialization.
