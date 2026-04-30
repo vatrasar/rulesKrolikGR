@@ -38,73 +38,18 @@ When writing UI tests for Avalonia and ReactiveUI in a headless environment, you
 
 
 
-1.  View Activation (The Window Rule)
+# Headless UI Testing Guidelines (Avalonia & ReactiveUI)
 
-Controls in Avalonia do not fire lifecycle events (like `AttachedToVisualTree`) until they are placed in a Window.
-**Rule:** Always wrap your `View` inside a `Window` and explicitly call `window.Show()`.
+When writing UI tests for Avalonia and ReactiveUI in a headless environment, you MUST adhere to the following rules to ensure test stability, complete isolation (FIRST principles), and proper framework initialization:
 
-2. The Layout Pass (Before Simulating Clicks)
-
-Standard `RaiseEvent` (e.g., for `Button.ClickEvent`) will fail to propagate to ReactiveUI bindings if the visual tree layout hasn't been calculated.
-**Rule:** Always call `window.LayoutManager.ExecuteInitialLayoutPass();` after `window.Show();` and before interacting with UI elements. Do not bypass `RaiseEvent` by manually executing ViewModel commands—test the actual UI interaction.
-
-3. UI Thread Synchronization
-
-Changes in Avalonia UI and ReactiveUI are asynchronous.
-**Rule:** Always call `Dispatcher.UIThread.RunJobs();` after showing the window and after every simulated user interaction (like `RaiseEvent`) to flush the UI event queue before asserting.
-
-4. Strict Test Isolation (Global State & Memory Leaks)
-
-Tests must never pollute the global state or leave lingering instances. Modifying `Application.Current` or leaving open Windows will cause subsequent tests to fail or leak memory.
-**Rule:** You MUST use a `try...finally` block. 
-
-- **In `try`:** Setup local state, run `Act`, and run `Assert`.
-- **In `finally`:** Restore any modified global state (e.g., `RequestedThemeVariant`) to its original value, and explicitly call `window.Close();`.
-
-# 
-
-### Canonical Test Template
-
-Use this structure as a baseline for all View tests:
-
-csharp
-
-
-```csharp
-[AvaloniaFact]
-public void ControlName_WhenCondition_DoesExpectedBehavior()
-{
- // Arrange
- var app = Application.Current!;
- var originalTheme = app.RequestedThemeVariant; // Save global state
-var viewModel = new MyViewModel();
-var view = new MyView { ViewModel = viewModel };
-var window = new Window { Content = view };
-
-try
-{
-    // Mutate global state if needed for the test
-    app.RequestedThemeVariant = ThemeVariant.Light;
-    window.Show();
-
-    // Force layout calculation
-    window.LayoutManager.ExecuteInitialLayoutPass();
-    Dispatcher.UIThread.RunJobs();
-
-    var myButton = view.FindControl<Button>("MyButtonName");
-
-    // Act
-    myButton!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-    Dispatcher.UIThread.RunJobs();
-
-    // Assert
-    // (Your fluent assertions here)
-}
-finally
-{
-    // Cleanup global state and memory
-    app.RequestedThemeVariant = originalTheme;
-    window.Close();
-}
-}
-```
+* **View Activation & Test Isolation:** Controls in Avalonia do not fire lifecycle events until they are placed in a Window. Tests must never pollute the global state or leave lingering Window instances, which causes memory leaks and flaky tests.
+  * You MUST use a `try...finally` block for every View test.
+  * In the `try` block: Wrap your `View` inside a `Window`, call `window.Show()`, run `Act`, and run `Assert`.
+  * In the `finally` block: Restore any modified global state (e.g., `Application.Current.RequestedThemeVariant`) to its original value, and explicitly call `window.Close()`.
+* **The Layout Pass & Thread Synchronization:** Avalonia needs explicit instructions in a headless environment to calculate layouts and process the UI thread queue.
+  * Always call `window.LayoutManager.ExecuteInitialLayoutPass()` immediately after `window.Show()` and before interacting with UI elements.
+  * Always call `Dispatcher.UIThread.RunJobs()` after showing the window and after every simulated user interaction.
+* **Simulating Button Clicks:** In Avalonia 11, manually calling `RaiseEvent(new RoutedEventArgs(Button.ClickEvent))` does NOT execute the bound ReactiveUI `Command`. 
+  * NEVER call `button.Command.Execute(null)` directly inside the test body, as it breaks encapsulation.
+  * NEVER rely only on `RaiseEvent(Button.ClickEvent)`. 
+  * You MUST use the provided extension method `SimulateClick()`. 
